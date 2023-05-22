@@ -1,30 +1,17 @@
 import os
-import requests
 import json
+from googleapiclient.discovery import build
+
+api_key: str = os.getenv('YT_API_KEY')
+
+youtube = build('youtube', 'v3', developerKey=api_key)
 
 
 class Channel:
-    def __init__(self, channel_id):
+    def __init__(self, channel_id: str) -> None:
         self.channel_id = channel_id
 
-    def print_info(self):
-        api_key = os.getenv("YT_API_KEY")
-        url = f"https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id={self.channel_id}&key={api_key}"
-        response = requests.get(url)
-        data = json.loads(response.text)
-
-        if "items" in data and len(data["items"]) > 0:
-            channel = data["items"][0]
-            snippet = channel["snippet"]
-            statistics = channel["statistics"]
-
-            print(f"Title: {snippet['title']}")
-            print(f"Description: {snippet['description']}")
-            print(f"Custom URL: {snippet['customUrl']}")
-            print(f"Published At: {snippet['publishedAt']}")
-            print(f"View Count: {statistics['viewCount']}")
-            print(f"Subscriber Count: {statistics['subscriberCount']}")
-            print(f"Video Count: {statistics['videoCount']}")
-        else:
-            print("Channel not found")
-
+    def print_info(self) -> None:
+        channel = youtube.channels().list(id=self.channel_id, part='snippet,statistics').execute()
+        channel_info = json.dumps(channel, indent=2, ensure_ascii=False)
+        print(channel_info)

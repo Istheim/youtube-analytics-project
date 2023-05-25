@@ -34,35 +34,30 @@ class Channel:
         self.video_count = int(channel_statistics['videoCount'])
         self.view_count = int(channel_statistics['viewCount'])
 
-    def print_info(self):
-        channel_info = {
-            'id': self.__channel_id,
-            'title': self.title,
-            'description': self.description,
-            'url': self.url,
-            'subscriber_count': self.subscriber_count,
-            'video_count': self.video_count,
-            'view_count': self.view_count
-        }
-        channel_info_str = json.dumps(channel_info, indent=2, ensure_ascii=False)
-        print(channel_info_str)
+    def __str__(self):
+        return f"{self.title} ({self.url})"
 
-    @staticmethod
-    def get_service():
-        return youtube
+    def __add__(self, other):
+        return self.subscriber_count + other.subscriber_count
 
-    def to_json(self, filename: str):
-        channel_info = {
-            'id': self.__channel_id,
-            'title': self.title,
-            'description': self.description,
-            'url': self.url,
-            'subscriber_count': self.subscriber_count,
-            'video_count': self.video_count,
-            'view_count': self.view_count
-        }
-        with open(filename, 'w', encoding='utf-8') as file:
-            json.dump(channel_info, file, ensure_ascii=False, indent=2)
+    def __sub__(self, other):
+        return self.subscriber_count - other.subscriber_count
+
+    def __gt__(self, other):
+        return self.subscriber_count > other.subscriber_count
+
+    def __ge__(self, other):
+        return self.subscriber_count >= other.subscriber_count
+
+    def __lt__(self, other):
+        return self.subscriber_count < other.subscriber_count
+
+    def __le__(self, other):
+        return self.subscriber_count <= other.subscriber_count
+
+    def __eq__(self, other):
+        return self.subscriber_count == other.subscriber_count
+
 
 
 

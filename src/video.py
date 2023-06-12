@@ -1,17 +1,25 @@
 import os
 from googleapiclient.discovery import build
+from src.playList import Play_Mixin
 
 
-class Video:
+class Video(Play_Mixin):
     def __init__(self, video_id):
         self.video_id = video_id
-        video_response = self.get_service().videos().list(part='snippet,statistics,contentDetails,topicDetails',
-                                                          id=self.video_id).execute()
+        try:
+            video_response = self.get_service().videos().list(part='snippet,statistics,contentDetails,topicDetails',
+                                                              id=self.video_id).execute()
 
-        self.video_title: str = video_response['items'][0]['snippet']['title']
-        self.view_count: int = video_response['items'][0]['statistics']['viewCount']
-        self.like_count: int = video_response['items'][0]['statistics']['likeCount']
-        self.comment_count: int = video_response['items'][0]['statistics']['commentCount']
+            self.video_title: str = video_response['items'][0]['snippet']['title']
+            self.view_count: int = video_response['items'][0]['statistics']['viewCount']
+            self.like_count: int = video_response['items'][0]['statistics']['likeCount']
+            self.comment_count: int = video_response['items'][0]['statistics']['commentCount']
+
+        except IndexError:
+            self.video_title = None
+            self.view_count = None
+            self.like_count = None
+            self.comment_count = None
 
     def __repr__(self):
         return f'{self.__class__.__name__}' \
@@ -23,13 +31,6 @@ class Video:
 
     def __str__(self):
         return f'{self.video_title}'
-
-    @classmethod
-    def get_service(cls):
-        """Класс-метод возвращающий объект для работы с YouTube API"""
-        api_key: str = os.getenv('YT_API_KEY')
-        object_get = build('youtube', 'v3', developerKey=api_key)
-        return object_get
 
 
 class PLVideo(Video):
